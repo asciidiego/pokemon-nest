@@ -6,7 +6,7 @@ import {PokemonService} from './pokemon.service';
 @Module({
 	imports: [
 	  CacheModule.register({
-	    ttl: 60, // Cached files Time To Live
+	    ttl: 60, // Cache requests for 1 minute to be fair and avoid 'disturbing' external APIs
 	  }),
 	  HttpModule
 	],
