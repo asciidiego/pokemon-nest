@@ -1,23 +1,35 @@
 const webpack = require('webpack');
+const path = require('path');
 const nodeExternals = require('webpack-node-externals');
-const StartServerPlugin = require('start-server-nestjs-webpack-plugin');
+const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
 
-module.exports = function(options) {
-  return {
-    ...options,
-    entry: ['webpack/hot/poll?100', options.entry],
-    externals: [
-      nodeExternals({
-        allowlist: ['webpack/hot/poll?100'],
-      }),
+module.exports = {
+  entry: ['webpack/hot/poll?100', './src/main.ts'],
+  target: 'node',
+  externals: [
+    nodeExternals({
+      allowlist: ['webpack/hot/poll?100'],
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
     ],
-    plugins: [
-      ...options.plugins,
-      new webpack.HotModuleReplacementPlugin(),
-      new webpack.WatchIgnorePlugin({
-        paths: [/\.js$/, /\.d\.ts$/]
-      }),
-      new StartServerPlugin({ name: options.output.filename }),
-    ],
-  };
+  },
+  mode: 'development',
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+  },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new RunScriptWebpackPlugin({ name: 'main.js' }),
+  ],
+  output: {
+    path: path.join(__dirname, 'dist'),
+    filename: 'main.js',
+  },
 };
